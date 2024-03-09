@@ -11,6 +11,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "PointsWidget.h"
+#include "TimerWidget.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -76,6 +77,7 @@ void ASkateParkCharacter::BeginPlay()
 
 	//UI elements
 	ShowPoints();
+	ShowTimer();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -116,12 +118,33 @@ void ASkateParkCharacter::ShowPoints()
 		}
 		else
 		{
-			UE_LOG(LogTemp, Error, TEXT("points Widget Instance not created"));
+			UE_LOG(LogTemp, Error, TEXT("Points Widget Instance not created"));
 		}
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("Score Widget Class not set"));
+		UE_LOG(LogTemp, Error, TEXT("Points Widget Class not set"));
+	}
+}
+
+
+void ASkateParkCharacter::ShowTimer()
+{
+	if (TimerClass)
+	{
+		TimerInstance = CreateWidget<UTimerWidget>(GetWorld(), TimerClass);
+		if (TimerInstance)
+		{
+			TimerInstance->AddToViewport();
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Timer Widget Instance not created"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Timer Widget Class not set"));
 	}
 }
 

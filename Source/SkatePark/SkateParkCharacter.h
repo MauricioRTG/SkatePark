@@ -60,6 +60,9 @@ public:
 	//Create points widget instance on screen
 	void ShowPoints();
 
+	//Create timer widget instance on screen
+	void ShowTimer();
+
 protected:
 
 	/** Called for movement input */
@@ -85,5 +88,10 @@ private:
 	TSubclassOf<class UPointsWidget> PointsClass;
 
 	UPointsWidget* PointsInstance;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<class UTimerWidget> TimerClass;
+
+	UTimerWidget* TimerInstance;
 };
 
