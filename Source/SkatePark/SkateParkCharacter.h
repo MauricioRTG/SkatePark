@@ -20,7 +20,7 @@ class ASkateParkCharacter : public ACharacter
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
-	
+
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputMappingContext* DefaultMappingContext;
@@ -37,9 +37,23 @@ class ASkateParkCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* LookAction;
 
+	/** Look Input Action */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	class USkeletalMeshComponent* SkateBoard;
+
 public:
 	ASkateParkCharacter();
-	
+
+	/** Returns CameraBoom subobject **/
+	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+	/** Returns FollowCamera subobject **/
+	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+	/* Returns Player Score*/
+	FORCEINLINE int32 GetPlayerPoints() const { return Points; }
+
+	UFUNCTION(BlueprintCallable)
+	void UpdatePoints(int32 PointsAmount);
 
 protected:
 
@@ -48,19 +62,17 @@ protected:
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
-			
 
-protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	
+
 	// To add mapping context
 	virtual void BeginPlay();
 
-public:
-	/** Returns CameraBoom subobject **/
-	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-	/** Returns FollowCamera subobject **/
-	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+private:
+	/*Player's score updated with each coin collected*/
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Points, meta = (AllowPrivateAccess = "true"))
+	int32 Points;
+
 };
 
