@@ -9,6 +9,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Components/SkeletalMeshComponent.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -18,7 +19,7 @@ ASkateParkCharacter::ASkateParkCharacter()
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
-		
+
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -47,6 +48,13 @@ ASkateParkCharacter::ASkateParkCharacter()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
+	//Skateboard skeletal mesh
+	SkateBoard = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkateBoard"));
+	SkateBoard->SetupAttachment(RootComponent);
+
+	//Set points
+	Points = 0;
+
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
@@ -73,7 +81,7 @@ void ASkateParkCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 {
 	// Set up action bindings
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent)) {
-		
+
 		//Jumping
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
@@ -85,7 +93,12 @@ void ASkateParkCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ASkateParkCharacter::Look);
 
 	}
+}
 
+void ASkateParkCharacter::UpdatePoints(int32 PointsAmount)
+{
+	Points = Points + PointsAmount;
+	UE_LOG(LogTemp, Warning, TEXT("Score: %d"), Points);
 }
 
 void ASkateParkCharacter::Move(const FInputActionValue& Value)
@@ -101,7 +114,7 @@ void ASkateParkCharacter::Move(const FInputActionValue& Value)
 
 		// get forward vector
 		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-	
+
 		// get right vector 
 		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 

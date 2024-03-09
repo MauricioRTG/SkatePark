@@ -13,5 +13,24 @@ UCLASS()
 class SKATEPARK_API ASprayPaintCan : public APickupItem
 {
 	GENERATED_BODY()
-	
+
+public:
+	ASprayPaintCan();
+
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+	virtual void OnSphereOverlap(
+		UPrimitiveComponent* OverlappedComponent,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComponent,
+		int32 OtherBodyIndex,
+		bool FromSweep,
+		const FHitResult& SweepResult
+	) override;
+
+private:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowprivateAccess = "true"));
+	int32 PointsAmount;
 };
