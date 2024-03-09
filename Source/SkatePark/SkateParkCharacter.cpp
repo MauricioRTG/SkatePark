@@ -10,6 +10,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "PointsWidget.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -72,6 +73,9 @@ void ASkateParkCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
+
+	//UI elements
+	ShowPoints();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -99,6 +103,26 @@ void ASkateParkCharacter::UpdatePoints(int32 PointsAmount)
 {
 	Points = Points + PointsAmount;
 	UE_LOG(LogTemp, Warning, TEXT("Score: %d"), Points);
+}
+
+void ASkateParkCharacter::ShowPoints()
+{
+	if (PointsClass)
+	{
+		PointsInstance = CreateWidget<UPointsWidget>(GetWorld(), PointsClass);
+		if (PointsInstance)
+		{
+			PointsInstance->AddToViewport();
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("points Widget Instance not created"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Score Widget Class not set"));
+	}
 }
 
 void ASkateParkCharacter::Move(const FInputActionValue& Value)
