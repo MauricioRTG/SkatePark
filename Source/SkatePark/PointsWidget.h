@@ -13,5 +13,14 @@ UCLASS()
 class SKATEPARK_API UPointsWidget : public UUserWidget
 {
 	GENERATED_BODY()
-	
+
+protected:
+	bool Initialize() override;
+
+public:
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* PointsTextField;
+
+	UFUNCTION(BlueprintCallable)
+	FText SetPointsTextField();
 };
