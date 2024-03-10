@@ -4,6 +4,7 @@
 #include "PickupItem.h"
 #include "Components/SphereComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "TimerManager.h"
 
 // Sets default values
 APickupItem::APickupItem()
@@ -15,7 +16,7 @@ APickupItem::APickupItem()
 	bReplicates = true;
 
 	/*PickupItem Mesh*/
-	PickupItemMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
+	PickupItemMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("PickupItemMesh"));
 	SetRootComponent(PickupItemMesh);
 	//When dropped it need to collide with all the objects in scene
 	PickupItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
@@ -32,6 +33,7 @@ APickupItem::APickupItem()
 	//Do not trigger ovelap events yet
 	AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
+	RespawnDelay = 10.f;
 }
 
 // Called when the game starts or when spawned
@@ -50,14 +52,32 @@ void APickupItem::BeginPlay()
 	
 }
 
-void APickupItem::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool FromSweep, const FHitResult& SweepResult)
-{
-}
-
 // Called every frame
 void APickupItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
+
+void APickupItem::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool FromSweep, const FHitResult& SweepResult)
+{
+}
+
+void APickupItem::RespawnDelayFunction()
+{
+	//Unhidde actor and clears timer
+	SetActorHiddenInGame(false);
+	GetWorldTimerManager().ClearTimer(TimerHandle);
+}
+
+void APickupItem::StartTimer()
+{
+	//Hidde actor in game
+	SetActorHiddenInGame(true);
+	//Delay respawn
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &APickupItem::RespawnDelayFunction, RespawnDelay, false);
+}
+
+
+
 

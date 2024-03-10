@@ -22,6 +22,18 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	/*Unhidde actor and clears timer */
+	virtual void RespawnDelayFunction();
+
+	//Hidde actor and start timer
+	virtual void StartTimer();
+
+	FTimerHandle TimerHandle;
+
+	//Delay for respawning checkpoint after player overlapped with it
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = CollisionDetection, meta = (AllowPrivateAccess = "true"))
+	float RespawnDelay;
+
 	//Callback to bind to OnComponentBeginOverlap delegate
 	UFUNCTION()
 		virtual void OnSphereOverlap(
@@ -40,5 +52,5 @@ protected:
 		USkeletalMeshComponent* PickupItemMesh;
 
 private:
-
+	
 };
