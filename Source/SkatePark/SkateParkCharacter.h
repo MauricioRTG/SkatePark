@@ -55,6 +55,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void UpdatePoints(int32 PointsAmount);
 
+	virtual void Tick(float DeltaTime) override;
+
 	/* UI */
 
 	//Create points widget instance on screen
@@ -68,6 +70,8 @@ protected:
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
 
+	void SlowDown(float Deltatime);
+
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
 
@@ -77,10 +81,41 @@ protected:
 	// To add mapping context
 	virtual void BeginPlay();
 
+
 private:
 	/*Player's score updated with each coin collected*/
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Points, meta = (AllowPrivateAccess = "true"))
 	int32 Points;
+
+	/*Movement*/
+
+	//Speed when moving backwards
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+	float BackwardsMaxWalkSpeed;
+
+	//Speed when moving forward
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+	float NormalMaxWalkSpeed;
+
+	//Lerp alpha (interpolation speed) when the skateboard starts speeding up
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+	float SpeedUpLerpMovementAlpha;
+
+	//Interp speed when skate starts to slow down
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+	float SlowDownInterpSpeed;
+
+	//Movement forward interpolation for speeding up and slowing down
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+	float InterpMovementVectorY;
+
+	//Min threshold for Movement forward interpolation
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+	float MinInterpMovementVectorY;
+
+	//Turn rate when moving 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+	float TurnRate;
 
 	/*UI Classes and Instances*/
 

@@ -33,9 +33,16 @@ ASkateParkCharacter::ASkateParkCharacter()
 
 	// Note: For faster iteration times these variables, and many more, can be tweaked in the Character Blueprint
 	// instead of recompiling to adjust them
+	TurnRate = 0.1f;
+	SpeedUpLerpMovementAlpha = 0.01f;
+	MinInterpMovementVectorY = 0.01f;
+	InterpMovementVectorY = 0.f;
+	BackwardsMaxWalkSpeed = 50.f;
+	NormalMaxWalkSpeed = 500.f;
+	SlowDownInterpSpeed = 0.1f;
 	GetCharacterMovement()->JumpZVelocity = 700.f;
 	GetCharacterMovement()->AirControl = 0.35f;
-	GetCharacterMovement()->MaxWalkSpeed = 500.f;
+	GetCharacterMovement()->MaxWalkSpeed = NormalMaxWalkSpeed;
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 
@@ -107,6 +114,11 @@ void ASkateParkCharacter::UpdatePoints(int32 PointsAmount)
 	UE_LOG(LogTemp, Warning, TEXT("Score: %d"), Points);
 }
 
+void ASkateParkCharacter::Tick(float DeltaTime)
+{
+	SlowDown(DeltaTime);
+}
+
 void ASkateParkCharacter::ShowPoints()
 {
 	if (PointsClass)
@@ -155,20 +167,57 @@ void ASkateParkCharacter::Move(const FInputActionValue& Value)
 
 	if (Controller != nullptr)
 	{
-		// find out which way is forward
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
+		//The foward vector in the SKM_Skateboard points to left so we multiply by minus one so is the correct right vector of the skateboard and go left or right
+		//Also multiplay for turn rate for desired turn rotation speed
+		FVector RightVector = (SkateBoard->GetForwardVector() * -1.f) * TurnRate;
 
-		// get forward vector
-		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		//The right vector in the SKM_Skateboard points to the front of the skateboard, so add movement to go forward or backwards
+		FVector ForwardVector = SkateBoard->GetRightVector();
 
-		// get right vector 
-		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+		//Speeds up slowly until it reaches max speed
+		InterpMovementVectorY = FMath::Lerp(InterpMovementVectorY, MovementVector.Y, SpeedUpLerpMovementAlpha);
 
-		// add movement 
-		AddMovementInput(ForwardDirection, MovementVector.Y);
-		AddMovementInput(RightDirection, MovementVector.X);
+		//When character moves backwards don't orient rotation to movement and reduce the MaxWalkSpeed
+		if (MovementVector.Y < 0)
+		{
+			GetCharacterMovement()->bOrientRotationToMovement = false;
+			GetCharacterMovement()->MaxWalkSpeed = BackwardsMaxWalkSpeed;
+	
+			//Aadd movement to go backwards
+			AddMovementInput(ForwardVector, InterpMovementVectorY * 2.f);
+		}
+		else //Else orient rotation to Movement and to return to NormalMaxWalkSpeed
+		{
+			GetCharacterMovement()->bOrientRotationToMovement = true;
+			GetCharacterMovement()->MaxWalkSpeed = NormalMaxWalkSpeed;
+
+			/*Add Movement*/
+			//Lerp MovementVector.Y so the character smoothly slows down
+			UE_LOG(LogTemp, Warning, TEXT("LerpMovementVectorY : %f"), InterpMovementVectorY);
+			UE_LOG(LogTemp, Warning, TEXT("MovementVector.Y : %f"), MovementVector.Y);
+			//Add movement to go forward
+			AddMovementInput(ForwardVector, InterpMovementVectorY);
+
+			//left/right when moving forward
+			AddMovementInput(RightVector, MovementVector.X);
+		}
 	}
+}
+
+void ASkateParkCharacter::SlowDown(float Deltatime)
+{
+	//LerpMovementVectorY = FMath::Lerp(LerpMovementVectorY, 0.0f, SlowDownAlpha);
+	InterpMovementVectorY = FMath::FInterpTo(InterpMovementVectorY, 0.f, Deltatime, SlowDownInterpSpeed);
+
+	//If the InterpMovementVectorY reaches a the min threshold imediatly set it to 0, to avoid slowly reaching 0.0
+	if (InterpMovementVectorY <= MinInterpMovementVectorY)
+	{
+		InterpMovementVectorY = 0.f;
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("LerpMovementVectorY : %f"), InterpMovementVectorY);
+	FVector ForwardVector = SkateBoard->GetRightVector();
+	AddMovementInput(ForwardVector, InterpMovementVectorY);
 }
 
 void ASkateParkCharacter::Look(const FInputActionValue& Value)
