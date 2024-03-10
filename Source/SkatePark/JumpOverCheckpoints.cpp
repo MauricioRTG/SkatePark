@@ -6,6 +6,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/ArrowComponent.h"
 #include "SkateParkCharacter.h"
+#include "TimerManager.h"
 
 // Sets default values
 AJumpOverCheckpoints::AJumpOverCheckpoints()
@@ -34,6 +35,7 @@ AJumpOverCheckpoints::AJumpOverCheckpoints()
 	//Set points amount to grant to player
 	PointsAmount = 10;
 	MinDotProductParallelThreshold = 200.f;
+	RespawnDelay = 10.f;
 	
 }
 
@@ -81,8 +83,20 @@ void AJumpOverCheckpoints::OnBoxEndOverlap(UPrimitiveComponent* OverlappedCompon
 		{
 			//If player traverse the box in the correct direction update points
 			Character->UpdatePoints(PointsAmount);
+
+			//Hidde actor in game
+			SetActorHiddenInGame(true);
+			//Delay respawn
+			GetWorldTimerManager().SetTimer(TimerHandle, this, &AJumpOverCheckpoints::RespawnDelayFunction, RespawnDelay, false);
 		}
 	}
+}
+
+void AJumpOverCheckpoints::RespawnDelayFunction()
+{
+	//Unhidde actor and clears timer
+	SetActorHiddenInGame(false);
+	GetWorldTimerManager().ClearTimer(TimerHandle);
 }
 
 

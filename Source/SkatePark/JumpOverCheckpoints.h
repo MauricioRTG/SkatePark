@@ -30,6 +30,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	class UStaticMeshComponent* Mesh;
 
+	/*Unhidde actor and clears timer */
+	void RespawnDelayFunction();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -50,4 +53,10 @@ private:
 	//Min threshold to consider that two vector are parallel
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = CollisionDetection, meta = (AllowPrivateAccess = "true"))
 	float MinDotProductParallelThreshold;
+
+	//Delay for respawning checkpoint after player overlapped with it
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = CollisionDetection, meta = (AllowPrivateAccess = "true"))
+	float RespawnDelay;
+
+	FTimerHandle TimerHandle;
 };
