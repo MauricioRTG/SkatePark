@@ -23,7 +23,6 @@ void ASprayPaintCan::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, A
 	if (SkateParkCharacter)
 	{
 		SkateParkCharacter->UpdatePoints(PointsAmount);
+		StartTimer();
 	}
-
-	Destroy();
 }
