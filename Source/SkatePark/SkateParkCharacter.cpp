@@ -33,9 +33,11 @@ ASkateParkCharacter::ASkateParkCharacter()
 
 	// Note: For faster iteration times these variables, and many more, can be tweaked in the Character Blueprint
 	// instead of recompiling to adjust them
+	BackwardsMaxWalkSpeed = 50.f;
+	NormalMaxWalkSpeed = 500.f;
 	GetCharacterMovement()->JumpZVelocity = 700.f;
 	GetCharacterMovement()->AirControl = 0.35f;
-	GetCharacterMovement()->MaxWalkSpeed = 500.f;
+	GetCharacterMovement()->MaxWalkSpeed = NormalMaxWalkSpeed;
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 
@@ -155,19 +157,24 @@ void ASkateParkCharacter::Move(const FInputActionValue& Value)
 
 	if (Controller != nullptr)
 	{
-		// find out which way is forward
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
-
-		// get forward vector
-		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-
-		// get right vector 
-		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-
-		// add movement 
-		AddMovementInput(ForwardDirection, MovementVector.Y);
-		AddMovementInput(RightDirection, MovementVector.X);
+		//When character moves backwards don't orient rotation to movement and reduce the MaxWalkSpeed
+		if (MovementVector.Y < 0)
+		{
+			GetCharacterMovement()->bOrientRotationToMovement = false;
+			GetCharacterMovement()->MaxWalkSpeed = BackwardsMaxWalkSpeed;
+			//The right vector in the SKM_Skateboard points to the front of the skateboard, so add movement to go backwards
+			AddMovementInput(SkateBoard->GetRightVector(), MovementVector.Y);
+		}
+		else //Else orient rotation to Movement and to return to NormalMaxWalkSpeed
+		{
+			GetCharacterMovement()->bOrientRotationToMovement = true;
+			GetCharacterMovement()->MaxWalkSpeed = NormalMaxWalkSpeed;
+			// add movement 
+			//The right vector in the SKM_Skateboard points to the front of the skateboard, so add movement to go forward
+			AddMovementInput(SkateBoard->GetRightVector(), MovementVector.Y);
+			//The foward vector in the SKM_Skateboard points to left so we multiply by one so is the correct right vector of the skateboard and go left or right
+			AddMovementInput(SkateBoard->GetForwardVector() * -1.f, MovementVector.X);
+		}
 	}
 }
 
