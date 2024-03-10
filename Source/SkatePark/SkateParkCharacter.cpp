@@ -33,6 +33,9 @@ ASkateParkCharacter::ASkateParkCharacter()
 
 	// Note: For faster iteration times these variables, and many more, can be tweaked in the Character Blueprint
 	// instead of recompiling to adjust them
+	TurnRate = 0.1f;
+	LerpMovementAlpha = 0.01f;
+	LerpMovementVectorY = 0.f;
 	BackwardsMaxWalkSpeed = 50.f;
 	NormalMaxWalkSpeed = 500.f;
 	GetCharacterMovement()->JumpZVelocity = 700.f;
@@ -169,11 +172,20 @@ void ASkateParkCharacter::Move(const FInputActionValue& Value)
 		{
 			GetCharacterMovement()->bOrientRotationToMovement = true;
 			GetCharacterMovement()->MaxWalkSpeed = NormalMaxWalkSpeed;
-			// add movement 
+
+			/*Add Movement*/
+			//Lerp MovementVector.Y so the character smoothly slows down
+			LerpMovementVectorY = FMath::Lerp(MovementVector.Y, LerpMovementVectorY, LerpMovementAlpha);
+			UE_LOG(LogTemp, Warning, TEXT("LerpMovementVectorY : %f"), LerpMovementVectorY);
+
 			//The right vector in the SKM_Skateboard points to the front of the skateboard, so add movement to go forward
-			AddMovementInput(SkateBoard->GetRightVector(), MovementVector.Y);
+			AddMovementInput(SkateBoard->GetRightVector(), LerpMovementVectorY);
+
 			//The foward vector in the SKM_Skateboard points to left so we multiply by one so is the correct right vector of the skateboard and go left or right
-			AddMovementInput(SkateBoard->GetForwardVector() * -1.f, MovementVector.X);
+			//Also multiplay for turn rate for desired turn rotation speed
+			FVector RightVector = (SkateBoard->GetForwardVector() * -1.f) * TurnRate;
+
+			AddMovementInput(RightVector, MovementVector.X);
 		}
 	}
 }
