@@ -3,6 +3,8 @@
 
 #include "SprayPaintCan.h"
 #include "SkateParkCharacter.h"
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundBase.h"
 
 ASprayPaintCan::ASprayPaintCan()
 {
@@ -22,6 +24,12 @@ void ASprayPaintCan::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, A
 	ASkateParkCharacter* SkateParkCharacter = Cast<ASkateParkCharacter>(OtherActor);
 	if (SkateParkCharacter)
 	{
+		//PlaySound
+		if (Sound)
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, Sound, GetActorLocation());
+		}
+
 		SkateParkCharacter->UpdatePoints(PointsAmount);
 		StartTimer();
 	}

@@ -7,6 +7,7 @@
 #include "Components/ArrowComponent.h"
 #include "SkateParkCharacter.h"
 #include "TimerManager.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AJumpOverCheckpoints::AJumpOverCheckpoints()
@@ -24,7 +25,7 @@ AJumpOverCheckpoints::AJumpOverCheckpoints()
 	/*Collision box*/
 	CollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionBox"));
 	CollisionBox->SetupAttachment(Arrow);
-	//Set Collision to no collide whith anything, so later we can make sure that server only has authority over collisions
+	//Set Collision to no collide whith anything
 	CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
@@ -81,13 +82,17 @@ void AJumpOverCheckpoints::OnBoxEndOverlap(UPrimitiveComponent* OverlappedCompon
 		//Vector are nearly parallel
 		if (DotProduct > MinDotProductParallelThreshold)
 		{
+			//PlaySound
+			if (Sound)
+			{
+				UGameplayStatics::PlaySoundAtLocation(this, Sound, GetActorLocation());
+			}
+
 			//If player traverse the box in the correct direction update points
 			Character->UpdatePoints(PointsAmount);
 
-			//Hidde actor in game
-			SetActorHiddenInGame(true);
-			//Delay respawn
-			GetWorldTimerManager().SetTimer(TimerHandle, this, &AJumpOverCheckpoints::RespawnDelayFunction, RespawnDelay, false);
+			//Hide Actor and start timer to respawn it again
+			StartTimer();
 		}
 	}
 }
@@ -96,7 +101,26 @@ void AJumpOverCheckpoints::RespawnDelayFunction()
 {
 	//Unhidde actor and clears timer
 	SetActorHiddenInGame(false);
+	//Allow trigger overlap envents
+	CollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	//Only overlap with player
+	CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+
 	GetWorldTimerManager().ClearTimer(TimerHandle);
+}
+
+void AJumpOverCheckpoints::StartTimer()
+{
+	//Hidde actor in game
+	SetActorHiddenInGame(true);
+
+	//Ignore collisions
+	CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	//Do not trigger ovelap events yet
+	CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	//Delay respawn
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &AJumpOverCheckpoints::RespawnDelayFunction, RespawnDelay, false);
 }
 
 
