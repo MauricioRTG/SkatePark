@@ -129,10 +129,9 @@ void ASkateParkCharacter::UpdatePoints(int32 PointsAmount)
 
 void ASkateParkCharacter::Tick(float DeltaTime)
 {
-	//PlaySound
+	//Play skatboard sound when player is moving
 	if (GetVelocity().Size() > 0.2f)
 	{
-		//PlaySound
 		if (Sound)
 		{
 			if (!bSoundIsPlaying)
