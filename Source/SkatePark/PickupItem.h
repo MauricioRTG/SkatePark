@@ -31,25 +31,25 @@ protected:
 	FTimerHandle TimerHandle;
 
 	//Delay for respawning checkpoint after player overlapped with it
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = CollisionDetection, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = CollisionDetection)
 	float RespawnDelay;
 
 	//Callback to bind to OnComponentBeginOverlap delegate
 	UFUNCTION()
-		virtual void OnSphereOverlap(
+	virtual void OnSphereOverlap(
 			UPrimitiveComponent* OverlappedComponent,
 			AActor* OtherActor,
 			UPrimitiveComponent* OtherComponent,
 			int32 OtherBodyIndex,
 			bool FromSweep,
 			const FHitResult& SweepResult
-		);
+	);
 
 	UPROPERTY(VisibleAnywhere, Category = "PickupItem Properties")
-		class USphereComponent* AreaSphere;
+	class USphereComponent* AreaSphere;
 
-	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
-		USkeletalMeshComponent* PickupItemMesh;
+	UPROPERTY(VisibleAnywhere, Category = "PickupItem Properties")
+	class USkeletalMeshComponent* PickupItemMesh;
 
 private:
 	
