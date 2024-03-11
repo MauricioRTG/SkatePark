@@ -13,6 +13,10 @@
 #include "TimerWidget.h"
 #include "MainMenuWidget.h"
 #include "GameOverWidget.h"
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundBase.h"
+#include "TimerManager.h"
+#include "Components/AudioComponent.h"
 
 
 
@@ -65,6 +69,8 @@ ASkateParkCharacter::ASkateParkCharacter()
 
 	//Set points
 	Points = 0;
+	bSoundIsPlaying = false;
+	Delay = 6.0f;
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
@@ -123,9 +129,37 @@ void ASkateParkCharacter::UpdatePoints(int32 PointsAmount)
 
 void ASkateParkCharacter::Tick(float DeltaTime)
 {
+	//PlaySound
+	if (GetVelocity().Size() > 0.2f)
+	{
+		//PlaySound
+		if (Sound)
+		{
+			if (!bSoundIsPlaying)
+			{
+				AudioComp = UGameplayStatics::SpawnSoundAtLocation(this, Sound, GetActorLocation());
+				AudioComp->bAutoActivate = true;
+				bSoundIsPlaying = true;
+			}
+		}
+	}
+	else
+	{
+		if (AudioComp && bSoundIsPlaying)
+		{
+			AudioComp->ToggleActive();
+			bSoundIsPlaying = false;
+		}
+	}
+
 	SlowDown(DeltaTime);
 }
 
+void ASkateParkCharacter::DelayPlayingSound()
+{
+	AudioComp->ToggleActive();
+	bSoundIsPlaying = false;
+}
 
 void ASkateParkCharacter::Move(const FInputActionValue& Value)
 {

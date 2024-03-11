@@ -8,6 +8,7 @@
 #include "SkateParkCharacter.h"
 #include "TimerManager.h"
 #include "Kismet/GameplayStatics.h"
+#include "Sound/SoundBase.h"
 
 // Sets default values
 AJumpOverCheckpoints::AJumpOverCheckpoints()

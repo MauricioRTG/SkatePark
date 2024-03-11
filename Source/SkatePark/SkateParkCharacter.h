@@ -72,6 +72,8 @@ public:
 	//Create Game Over widget instance on screen
 	void ShowGameOver();
 
+	void DelayPlayingSound();
+
 protected:
 
 	/** Called for movement input */
@@ -148,5 +150,18 @@ private:
 
 	UGameOverWidget* GameOverInstance;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowprivateAccess = "true"));
+	class USoundBase* Sound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowprivateAccess = "true"));
+	bool bSoundIsPlaying = false;
+
+	FTimerHandle TimerHandle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = CollisionDetection, meta = (AllowPrivateAccess = "true"))
+	float Delay;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = CollisionDetection, meta = (AllowPrivateAccess = "true"))
+	class UAudioComponent* AudioComp;
 };
 
