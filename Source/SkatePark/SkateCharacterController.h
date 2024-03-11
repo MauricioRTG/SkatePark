@@ -23,6 +23,8 @@ public:
 
 	FORCEINLINE	int32 GetSeconds() { return Seconds; };
 
+	void SetStartTimer(bool StartTimer);
+
 	virtual void Tick(float DeltaTime) override;
 
 	void GameOver();
@@ -47,5 +49,5 @@ private:
 
 	uint32 Countdown = 0;
 
-	bool bStartTimer = true;
+	bool bStartTimer = false;
 };

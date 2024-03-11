@@ -13,5 +13,14 @@ UCLASS()
 class SKATEPARK_API UMainMenuWidget : public UUserWidget
 {
 	GENERATED_BODY()
-	
+
+protected:
+	void NativeConstruct() override;
+
+public:
+	UPROPERTY(meta = (BindWidget))
+	class UButton* StartGameButton;
+
+	UFUNCTION()
+	void OnStartGameButtonClicked();
 };

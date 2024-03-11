@@ -58,6 +58,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	/* UI */
+	//Create Main menu widget instance on screen
+	void ShowMainMenu();
 
 	//Create points widget instance on screen
 	void ShowPoints();
@@ -88,6 +90,9 @@ protected:
 
 
 private:
+
+	APlayerController* PlayerController;
+
 	/*Player's score updated with each coin collected*/
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Points, meta = (AllowPrivateAccess = "true"))
 	int32 Points;
@@ -123,6 +128,10 @@ private:
 	float TurnRate;
 
 	/*UI Classes and Instances*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<class UMainMenuWidget> MainMenuClass;
+
+	UMainMenuWidget* MainManuInstance;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<class UPointsWidget> PointsClass;
@@ -139,6 +148,5 @@ private:
 
 	UGameOverWidget* GameOverInstance;
 
-	APlayerController* PlayerController;
 };
 

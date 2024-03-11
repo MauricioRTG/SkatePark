@@ -73,3 +73,8 @@ void ASkateCharacterController::GameOver()
 	}
 }
 
+void ASkateCharacterController::SetStartTimer(bool StartTimer)
+{
+	bStartTimer = StartTimer;
+}
+

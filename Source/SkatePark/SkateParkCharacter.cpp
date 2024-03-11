@@ -1,4 +1,3 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "SkateParkCharacter.h"
 #include "Camera/CameraComponent.h"
@@ -12,7 +11,9 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "PointsWidget.h"
 #include "TimerWidget.h"
+#include "MainMenuWidget.h"
 #include "GameOverWidget.h"
+
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -85,9 +86,8 @@ void ASkateParkCharacter::BeginPlay()
 		}
 	}
 
-	//UI elements
-	ShowPoints();
-	ShowTimer();
+	//UI
+	ShowMainMenu();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -193,6 +193,26 @@ void ASkateParkCharacter::Look(const FInputActionValue& Value)
 		// add yaw and pitch input to controller
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
+	}
+}
+
+void ASkateParkCharacter::ShowMainMenu()
+{
+	if (MainMenuClass)
+	{
+		MainManuInstance = CreateWidget<UMainMenuWidget>(GetWorld(), MainMenuClass);
+		if (MainManuInstance)
+		{
+			MainManuInstance->AddToViewport();
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("MainMenu Widget Instance not created"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("MainMenu Widget Class not set"));
 	}
 }
 
