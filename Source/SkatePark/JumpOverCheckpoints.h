@@ -33,6 +33,8 @@ public:
 	/*Unhidde actor and clears timer */
 	void RespawnDelayFunction();
 
+	void StartTimer();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -49,6 +51,9 @@ protected:
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = CollisionDetection, meta = (AllowPrivateAccess = "true"))
 	int32 PointsAmount;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowprivateAccess = "true"));
+	class USoundBase* Sound;
 
 	//Min threshold to consider that two vector are parallel
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = CollisionDetection, meta = (AllowPrivateAccess = "true"))

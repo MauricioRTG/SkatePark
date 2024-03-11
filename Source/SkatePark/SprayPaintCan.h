@@ -33,4 +33,7 @@ protected:
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowprivateAccess = "true"));
 	int32 PointsAmount;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowprivateAccess = "true"));
+	class USoundBase* Sound;
 };

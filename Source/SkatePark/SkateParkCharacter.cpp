@@ -1,4 +1,3 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "SkateParkCharacter.h"
 #include "Camera/CameraComponent.h"
@@ -12,6 +11,13 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "PointsWidget.h"
 #include "TimerWidget.h"
+#include "MainMenuWidget.h"
+#include "GameOverWidget.h"
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundBase.h"
+#include "TimerManager.h"
+#include "Components/AudioComponent.h"
+
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -63,6 +69,8 @@ ASkateParkCharacter::ASkateParkCharacter()
 
 	//Set points
 	Points = 0;
+	bSoundIsPlaying = false;
+	Delay = 6.0f;
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
@@ -74,17 +82,22 @@ void ASkateParkCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	//Add Input Mapping Context
-	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+
+	PlayerController = Cast<APlayerController>(Controller);
+	if (PlayerController)
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
+
+		PlayerController->SetInputMode(FInputModeGameOnly());
+		PlayerController->bShowMouseCursor = false;
 	}
 
-	//UI elements
-	ShowPoints();
+	//UI
 	ShowTimer();
+	ShowPoints();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -116,48 +129,35 @@ void ASkateParkCharacter::UpdatePoints(int32 PointsAmount)
 
 void ASkateParkCharacter::Tick(float DeltaTime)
 {
+	//Play skatboard sound when player is moving
+	if (GetVelocity().Size() > 0.2f)
+	{
+		if (Sound)
+		{
+			if (!bSoundIsPlaying)
+			{
+				AudioComp = UGameplayStatics::SpawnSoundAtLocation(this, Sound, GetActorLocation());
+				AudioComp->bAutoActivate = true;
+				bSoundIsPlaying = true;
+			}
+		}
+	}
+	else
+	{
+		if (AudioComp && bSoundIsPlaying)
+		{
+			AudioComp->ToggleActive();
+			bSoundIsPlaying = false;
+		}
+	}
+
 	SlowDown(DeltaTime);
 }
 
-void ASkateParkCharacter::ShowPoints()
+void ASkateParkCharacter::DelayPlayingSound()
 {
-	if (PointsClass)
-	{
-		PointsInstance = CreateWidget<UPointsWidget>(GetWorld(), PointsClass);
-		if (PointsInstance)
-		{
-			PointsInstance->AddToViewport();
-		}
-		else
-		{
-			UE_LOG(LogTemp, Error, TEXT("Points Widget Instance not created"));
-		}
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("Points Widget Class not set"));
-	}
-}
-
-
-void ASkateParkCharacter::ShowTimer()
-{
-	if (TimerClass)
-	{
-		TimerInstance = CreateWidget<UTimerWidget>(GetWorld(), TimerClass);
-		if (TimerInstance)
-		{
-			TimerInstance->AddToViewport();
-		}
-		else
-		{
-			UE_LOG(LogTemp, Error, TEXT("Timer Widget Instance not created"));
-		}
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("Timer Widget Class not set"));
-	}
+	AudioComp->ToggleActive();
+	bSoundIsPlaying = false;
 }
 
 void ASkateParkCharacter::Move(const FInputActionValue& Value)
@@ -230,6 +230,114 @@ void ASkateParkCharacter::Look(const FInputActionValue& Value)
 		// add yaw and pitch input to controller
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
+	}
+}
+
+void ASkateParkCharacter::ShowMainMenu()
+{
+	if (MainMenuClass)
+	{
+		MainManuInstance = CreateWidget<UMainMenuWidget>(GetWorld(), MainMenuClass);
+		if (MainManuInstance)
+		{
+			MainManuInstance->AddToViewport();
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("MainMenu Widget Instance not created"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("MainMenu Widget Class not set"));
+	}
+}
+
+void ASkateParkCharacter::ShowGameOver()
+{
+	if (GameOverClass)
+	{
+		GameOverInstance = CreateWidget<UGameOverWidget>(GetWorld(), GameOverClass);
+		if (GameOverInstance)
+		{
+			//Add EndGame widget to viewport
+			GameOverInstance->AddToViewport();
+
+			//Interact only with UI elements and show cursor
+			PlayerController->SetPause(true);
+			PlayerController->SetInputMode(FInputModeUIOnly());
+			PlayerController->bShowMouseCursor = true;
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("GameOver Instance not created"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("GameOver Class not set"));
+	}
+}
+
+void ASkateParkCharacter::ShowPoints()
+{
+	if (PointsClass)
+	{
+		PointsInstance = CreateWidget<UPointsWidget>(GetWorld(), PointsClass);
+		if (PointsInstance)
+		{
+			PointsInstance->AddToViewport();
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Points Widget Instance not created"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Points Widget Class not set"));
+	}
+}
+
+
+void ASkateParkCharacter::ShowTimer()
+{
+	if (TimerClass)
+	{
+		TimerInstance = CreateWidget<UTimerWidget>(GetWorld(), TimerClass);
+		if (TimerInstance)
+		{
+			TimerInstance->AddToViewport();
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Timer Widget Instance not created"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Timer Widget Class not set"));
+	}
+}
+
+void ASkateParkCharacter::HideTimer()
+{
+	if (TimerInstance)
+	{
+		//Remove widget from viewport and destruct instance
+		TimerInstance->RemoveFromParent();
+		TimerInstance->Destruct();
+	}
+}
+
+
+void ASkateParkCharacter::HidePoints()
+{
+	if (PointsInstance)
+	{
+		//Remove widget from viewport and destruct instance
+		PointsInstance->RemoveFromParent();
+		PointsInstance->Destruct();
 	}
 }
 

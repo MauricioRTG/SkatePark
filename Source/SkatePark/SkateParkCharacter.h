@@ -58,12 +58,21 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	/* UI */
+	//Create Main menu widget instance on screen
+	void ShowMainMenu();
 
 	//Create points widget instance on screen
 	void ShowPoints();
+	void HidePoints();
 
 	//Create timer widget instance on screen
 	void ShowTimer();
+	void HideTimer();
+
+	//Create Game Over widget instance on screen
+	void ShowGameOver();
+
+	void DelayPlayingSound();
 
 protected:
 
@@ -83,6 +92,9 @@ protected:
 
 
 private:
+
+	APlayerController* PlayerController;
+
 	/*Player's score updated with each coin collected*/
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Points, meta = (AllowPrivateAccess = "true"))
 	int32 Points;
@@ -118,6 +130,10 @@ private:
 	float TurnRate;
 
 	/*UI Classes and Instances*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<class UMainMenuWidget> MainMenuClass;
+
+	UMainMenuWidget* MainManuInstance;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<class UPointsWidget> PointsClass;
@@ -128,5 +144,24 @@ private:
 	TSubclassOf<class UTimerWidget> TimerClass;
 
 	UTimerWidget* TimerInstance;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<class UGameOverWidget> GameOverClass;
+
+	UGameOverWidget* GameOverInstance;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowprivateAccess = "true"));
+	class USoundBase* Sound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowprivateAccess = "true"));
+	bool bSoundIsPlaying = false;
+
+	FTimerHandle TimerHandle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = CollisionDetection, meta = (AllowPrivateAccess = "true"))
+	float Delay;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = CollisionDetection, meta = (AllowPrivateAccess = "true"))
+	class UAudioComponent* AudioComp;
 };
 

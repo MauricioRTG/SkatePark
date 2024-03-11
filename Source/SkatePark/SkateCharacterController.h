@@ -23,7 +23,11 @@ public:
 
 	FORCEINLINE	int32 GetSeconds() { return Seconds; };
 
+	void SetStartTimer(bool StartTimer);
+
 	virtual void Tick(float DeltaTime) override;
+
+	void GameOver();
 
 protected:
 	virtual void BeginPlay() override;
@@ -44,4 +48,7 @@ private:
 	float MatchTime = 120.f;
 
 	uint32 Countdown = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Timer", meta = (AllowPrivateAccess = "true"))
+	bool bStartTimer = true;
 };

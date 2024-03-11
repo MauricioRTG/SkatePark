@@ -67,6 +67,13 @@ void APickupItem::RespawnDelayFunction()
 {
 	//Unhidde actor and clears timer
 	SetActorHiddenInGame(false);
+
+	//Allow trigger overlap envents
+	AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	//Only overlap with player
+	AreaSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+
+
 	GetWorldTimerManager().ClearTimer(TimerHandle);
 }
 
@@ -74,6 +81,12 @@ void APickupItem::StartTimer()
 {
 	//Hidde actor in game
 	SetActorHiddenInGame(true);
+
+	//Ignore collisions
+	AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	//Do not trigger ovelap events yet
+	AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
 	//Delay respawn
 	GetWorldTimerManager().SetTimer(TimerHandle, this, &APickupItem::RespawnDelayFunction, RespawnDelay, false);
 }
