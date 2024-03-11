@@ -61,9 +61,14 @@ public:
 
 	//Create points widget instance on screen
 	void ShowPoints();
+	void HidePoints();
 
 	//Create timer widget instance on screen
 	void ShowTimer();
+	void HideTimer();
+
+	//Create Game Over widget instance on screen
+	void ShowGameOver();
 
 protected:
 
@@ -128,5 +133,12 @@ private:
 	TSubclassOf<class UTimerWidget> TimerClass;
 
 	UTimerWidget* TimerInstance;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<class UGameOverWidget> GameOverClass;
+
+	UGameOverWidget* GameOverInstance;
+
+	APlayerController* PlayerController;
 };
 

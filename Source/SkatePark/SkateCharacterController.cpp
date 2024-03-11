@@ -3,6 +3,8 @@
 
 #include "SkateCharacterController.h"
 #include "Engine/EngineTypes.h"
+#include "SkateParkCharacter.h"
+#include "Kismet/GameplayStatics.h"
 
 ASkateCharacterController::ASkateCharacterController()
 {
@@ -20,7 +22,10 @@ void ASkateCharacterController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	SetTimer();
+	if (bStartTimer)
+	{
+		SetTimer();
+	}
 }
 
 void ASkateCharacterController::SetMinutesAndSeconds(float CountdownTime)
@@ -29,6 +34,12 @@ void ASkateCharacterController::SetMinutesAndSeconds(float CountdownTime)
 	Minutes = FMath::FloorToInt(CountdownTime / 60.f);
 	//Seconds left in that minute
 	Seconds = CountdownTime - Minutes * 60;
+
+	//Time is up
+	if (Minutes == 0 && Seconds == 0)
+	{
+		GameOver();
+	}
 
 	UE_LOG(LogTemp, Log, TEXT("%i : %i"), Minutes, Seconds);
 }
@@ -44,5 +55,21 @@ void ASkateCharacterController::SetTimer()
 	}
 	//Store seconds left in match to commpare if time has passed
 	Countdown = SecondsLeftInMatch;
+}
+
+void ASkateCharacterController::GameOver()
+{
+	bStartTimer = false;
+
+	ASkateParkCharacter* PlayerCharacter = Cast<ASkateParkCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	if (PlayerCharacter)
+	{
+		//Remove widgets from viewport
+		PlayerCharacter->HideTimer();
+		PlayerCharacter->HidePoints();
+
+		//Create EndGame widget
+		PlayerCharacter->ShowGameOver();
+	}
 }
 

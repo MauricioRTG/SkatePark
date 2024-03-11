@@ -12,6 +12,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "PointsWidget.h"
 #include "TimerWidget.h"
+#include "GameOverWidget.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -74,7 +75,9 @@ void ASkateParkCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	//Add Input Mapping Context
-	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+
+	PlayerController = Cast<APlayerController>(Controller);
+	if (PlayerController)
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
@@ -119,46 +122,6 @@ void ASkateParkCharacter::Tick(float DeltaTime)
 	SlowDown(DeltaTime);
 }
 
-void ASkateParkCharacter::ShowPoints()
-{
-	if (PointsClass)
-	{
-		PointsInstance = CreateWidget<UPointsWidget>(GetWorld(), PointsClass);
-		if (PointsInstance)
-		{
-			PointsInstance->AddToViewport();
-		}
-		else
-		{
-			UE_LOG(LogTemp, Error, TEXT("Points Widget Instance not created"));
-		}
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("Points Widget Class not set"));
-	}
-}
-
-
-void ASkateParkCharacter::ShowTimer()
-{
-	if (TimerClass)
-	{
-		TimerInstance = CreateWidget<UTimerWidget>(GetWorld(), TimerClass);
-		if (TimerInstance)
-		{
-			TimerInstance->AddToViewport();
-		}
-		else
-		{
-			UE_LOG(LogTemp, Error, TEXT("Timer Widget Instance not created"));
-		}
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("Timer Widget Class not set"));
-	}
-}
 
 void ASkateParkCharacter::Move(const FInputActionValue& Value)
 {
@@ -230,6 +193,93 @@ void ASkateParkCharacter::Look(const FInputActionValue& Value)
 		// add yaw and pitch input to controller
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
+	}
+}
+
+void ASkateParkCharacter::ShowGameOver()
+{
+	if (GameOverClass)
+	{
+		GameOverInstance = CreateWidget<UGameOverWidget>(GetWorld(), GameOverClass);
+		if (GameOverInstance)
+		{
+			//Add EndGame widget to viewport
+			GameOverInstance->AddToViewport();
+
+			//Interact only with UI elements and show cursor
+			PlayerController->SetInputMode(FInputModeUIOnly());
+			PlayerController->bShowMouseCursor = true;
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("GameOver Instance not created"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("GameOver Class not set"));
+	}
+}
+
+void ASkateParkCharacter::ShowPoints()
+{
+	if (PointsClass)
+	{
+		PointsInstance = CreateWidget<UPointsWidget>(GetWorld(), PointsClass);
+		if (PointsInstance)
+		{
+			PointsInstance->AddToViewport();
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Points Widget Instance not created"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Points Widget Class not set"));
+	}
+}
+
+
+void ASkateParkCharacter::ShowTimer()
+{
+	if (TimerClass)
+	{
+		TimerInstance = CreateWidget<UTimerWidget>(GetWorld(), TimerClass);
+		if (TimerInstance)
+		{
+			TimerInstance->AddToViewport();
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Timer Widget Instance not created"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Timer Widget Class not set"));
+	}
+}
+
+void ASkateParkCharacter::HideTimer()
+{
+	if (TimerInstance)
+	{
+		//Remove widget from viewport and destruct instance
+		TimerInstance->RemoveFromParent();
+		TimerInstance->Destruct();
+	}
+}
+
+
+void ASkateParkCharacter::HidePoints()
+{
+	if (PointsInstance)
+	{
+		//Remove widget from viewport and destruct instance
+		PointsInstance->RemoveFromParent();
+		PointsInstance->Destruct();
 	}
 }
 

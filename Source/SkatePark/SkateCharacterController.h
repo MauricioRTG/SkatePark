@@ -25,6 +25,8 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
+	void GameOver();
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -44,4 +46,6 @@ private:
 	float MatchTime = 120.f;
 
 	uint32 Countdown = 0;
+
+	bool bStartTimer = true;
 };
