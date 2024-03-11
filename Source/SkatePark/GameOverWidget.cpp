@@ -13,13 +13,15 @@ void UGameOverWidget::NativeConstruct()
 	{
 		RestartGameButton->OnClicked.AddUniqueDynamic(this, &UGameOverWidget::OnRestartGameButtonClicked);
 	}
+
+	LevelName = "MainMenuLevel";
 }
 
 void UGameOverWidget::OnRestartGameButtonClicked()
 {
 	//Get current level name
-	FString CurrentLevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
+	//FString CurrentLevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
 
 	//Restart level
-	UGameplayStatics::OpenLevel(GetWorld(), FName(CurrentLevelName));
+	UGameplayStatics::OpenLevel(GetWorld(), FName(LevelName));
 }

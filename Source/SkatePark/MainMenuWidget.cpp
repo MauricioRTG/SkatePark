@@ -4,6 +4,7 @@
 #include "MainMenuWidget.h"
 #include "Components/Button.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "SkateParkCharacter.h"
 #include "SkateCharacterController.h"
 
@@ -12,34 +13,29 @@ void UMainMenuWidget::NativeConstruct()
 	Super::NativeConstruct();
 
 	StartGameButton->OnClicked.AddUniqueDynamic(this, &UMainMenuWidget::OnStartGameButtonClicked);
-}
+	LevelName = "FantasyLevel";
 
-void UMainMenuWidget::OnStartGameButtonClicked()
-{
-	//Get player controller reference
-	ASkateCharacterController* PlayerController = Cast<ASkateCharacterController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	QuitGameButton->OnClicked.AddUniqueDynamic(this, &UMainMenuWidget::OnQuitGameButtonClicked);
+
+	APlayerController* PlayerController = Cast<APlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 
 	//Interact with game elements only, and don't show cursor, also start timer
 	if (PlayerController)
 	{
-		PlayerController->SetInputMode(FInputModeGameOnly());
-		PlayerController->bShowMouseCursor = false;
-		PlayerController->SetStartTimer(true);
+		PlayerController->SetInputMode(FInputModeUIOnly());
+		PlayerController->bShowMouseCursor = true;
 	}
+}
 
-	//Get PlayerCharacter reference
-	ASkateParkCharacter* PlayerCharacter = Cast<ASkateParkCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	if (PlayerCharacter)
-	{
-		//Show HUD widgets
-		PlayerCharacter->ShowTimer();
-		PlayerCharacter->ShowPoints();
-	}
+void UMainMenuWidget::OnStartGameButtonClicked()
+{
+	//Travel to Main level
+	UGameplayStatics::OpenLevel(GetWorld(), FName(LevelName));
+}
 
-	//Remove widget from viewport
-	RemoveFromParent();
-
-	//Destruct instance
-	Destruct();
+void UMainMenuWidget::OnQuitGameButtonClicked()
+{
+	//Quit Game
+	UKismetSystemLibrary::QuitGame(this, nullptr, EQuitPreference::Quit, false);
 }
 

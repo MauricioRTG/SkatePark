@@ -19,8 +19,11 @@ protected:
 
 public:
 	UPROPERTY(meta = (BindWidget))
-		class UButton* RestartGameButton;
+	class UButton* RestartGameButton;
 
 	UFUNCTION()
-		void OnRestartGameButtonClicked();
+	void OnRestartGameButtonClicked();
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Level")
+	FString LevelName;
 };

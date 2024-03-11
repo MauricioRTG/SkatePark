@@ -49,5 +49,6 @@ private:
 
 	uint32 Countdown = 0;
 
-	bool bStartTimer = false;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Timer", meta = (AllowPrivateAccess = "true"))
+	bool bStartTimer = true;
 };

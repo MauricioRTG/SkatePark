@@ -21,6 +21,15 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	class UButton* StartGameButton;
 
+	UPROPERTY(meta = (BindWidget))
+	class UButton* QuitGameButton;
+
 	UFUNCTION()
 	void OnStartGameButtonClicked();
+
+	UFUNCTION()
+	void OnQuitGameButtonClicked();
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Level")
+	FString LevelName;
 };

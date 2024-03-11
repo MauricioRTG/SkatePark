@@ -84,10 +84,14 @@ void ASkateParkCharacter::BeginPlay()
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
+
+		PlayerController->SetInputMode(FInputModeGameOnly());
+		PlayerController->bShowMouseCursor = false;
 	}
 
 	//UI
-	ShowMainMenu();
+	ShowTimer();
+	ShowPoints();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -227,6 +231,7 @@ void ASkateParkCharacter::ShowGameOver()
 			GameOverInstance->AddToViewport();
 
 			//Interact only with UI elements and show cursor
+			PlayerController->SetPause(true);
 			PlayerController->SetInputMode(FInputModeUIOnly());
 			PlayerController->bShowMouseCursor = true;
 		}
