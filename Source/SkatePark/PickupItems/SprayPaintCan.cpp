@@ -2,7 +2,7 @@
 
 
 #include "SprayPaintCan.h"
-#include "SkateParkCharacter.h"
+#include "SkatePark/PlayerCharacter/SkateParkCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundBase.h"
 

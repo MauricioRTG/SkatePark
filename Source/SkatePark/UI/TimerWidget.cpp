@@ -5,8 +5,8 @@
 #include "Components/TextBlock.h"
 #include "Engine.h"
 #include "Internationalization/Text.h"
-#include "SkateParkGameMode.h"
-#include "SkateCharacterController.h"
+#include "SkatePark/SkateParkGameMode.h"
+#include "SkatePark/PlayerCharacter/SkateCharacterController.h"
 
 bool UTimerWidget::Initialize()
 {
