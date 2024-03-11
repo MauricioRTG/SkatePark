@@ -5,8 +5,8 @@
 #include "Components/Button.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "SkateParkCharacter.h"
-#include "SkateCharacterController.h"
+#include "SkatePark/PlayerCharacter/SkateParkCharacter.h"
+#include "SkatePark/PlayerCharacter/SkateCharacterController.h"
 
 void UMainMenuWidget::NativeConstruct()
 {

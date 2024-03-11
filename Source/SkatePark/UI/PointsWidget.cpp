@@ -3,9 +3,9 @@
 
 #include "PointsWidget.h"
 #include "Components/TextBlock.h"
-#include "SkateParkCharacter.h"
+#include "SkatePark/PlayerCharacter/SkateParkCharacter.h"
 #include "Kismet/GameplayStatics.h"
-#include "SkateParkGameMode.h"
+#include "SkatePark/SkateParkGameMode.h"
 
 bool UPointsWidget::Initialize()
 {

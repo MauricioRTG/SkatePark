@@ -5,10 +5,10 @@
 #include "Components/BoxComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/ArrowComponent.h"
-#include "SkateParkCharacter.h"
 #include "TimerManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundBase.h"
+#include "SkatePark/PlayerCharacter/SkateParkCharacter.h"
 
 // Sets default values
 AJumpOverCheckpoints::AJumpOverCheckpoints()
