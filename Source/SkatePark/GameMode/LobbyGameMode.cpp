@@ -17,7 +17,7 @@ void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 		{
 			//Use seemless travel and travel to Match map
 			bUseSeamlessTravel = true;
-			World->ServerTravel(FString("/Game/Maps/FantasyLevel?listen"));
+			World->ServerTravel(FString("/Game/Maps/MatchMap?listen"));
 		}
 	}
 }
