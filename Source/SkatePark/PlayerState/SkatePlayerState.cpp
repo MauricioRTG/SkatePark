@@ -3,3 +3,7 @@
 
 #include "SkatePlayerState.h"
 
+void ASkatePlayerState::AddToScore(int32 ScoreAmount)
+{
+	SetScore(GetScore() + ScoreAmount);
+}

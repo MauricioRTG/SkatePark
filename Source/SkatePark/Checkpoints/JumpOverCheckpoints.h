@@ -33,6 +33,9 @@ public:
 	/*Unhidde actor and clears timer */
 	void RespawnDelayFunction();
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly);
+	class ASkateParkMultiplayerGameMode* GameMode;
+
 	void StartTimer();
 
 protected:

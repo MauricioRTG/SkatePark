@@ -13,5 +13,7 @@ UCLASS()
 class SKATEPARK_API ASkatePlayerState : public APlayerState
 {
 	GENERATED_BODY()
-	
+
+public:
+	void AddToScore(int32 ScoreAmount);
 };

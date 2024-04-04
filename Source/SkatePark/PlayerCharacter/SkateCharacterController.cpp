@@ -5,6 +5,7 @@
 #include "Engine/EngineTypes.h"
 #include "SkateParkCharacter.h"
 #include "Kismet/GameplayStatics.h"
+#include "SkatePark/GameStates/SkateParkGameState.h"
 
 ASkateCharacterController::ASkateCharacterController()
 {
