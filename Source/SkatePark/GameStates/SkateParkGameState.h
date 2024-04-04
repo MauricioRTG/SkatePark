@@ -19,7 +19,7 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	void UpdateTopScore(class ASkatePlayerState* SkatePlayerState);
 
-	UPROPERTY(VisibleAnywhere,Replicated)
+	UPROPERTY(VisibleAnywhere, Replicated)
 	TArray<ASkatePlayerState*> TopScoringPlayers;
 
 private:

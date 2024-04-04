@@ -6,6 +6,18 @@
 #include "SkatePark/PlayerState/SkatePlayerState.h"
 #include "SkatePark/GameStates/SkateParkGameState.h"
 
+void ASkateParkMultiplayerGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+
+	SkateParkGameState = GetGameState<ASkateParkGameState>();
+	if (!SkateParkGameState)
+	{
+		UE_LOG(LogTemp, Log, TEXT("GameState not found"));
+	}
+}
+
+
 void ASkateParkMultiplayerGameMode::PointsAcquired(ASkateCharacterController* PlayerController, int32 ScoreAmount)
 {
 	if (PlayerController == nullptr) return;
@@ -13,15 +25,12 @@ void ASkateParkMultiplayerGameMode::PointsAcquired(ASkateCharacterController* Pl
 	//Get Player State
 	ASkatePlayerState* PlayerState = Cast<ASkatePlayerState>(PlayerController->PlayerState);
 
-	//Get Game State
-	//ASkateParkGameState* SkateParkGameState = GetGameState<ASkateParkGameState>();
-
-	if (PlayerState)
+	if (PlayerState) 
 	{
+		//Get Game State
 		//Update player state score
 		PlayerState->AddToScore(ScoreAmount);
 		//Update top socrer if necesary
-		//SkateParkGameState->UpdateTopScore(PlayerState);
+		SkateParkGameState->UpdateTopScore(PlayerState);
 	}
 }
-

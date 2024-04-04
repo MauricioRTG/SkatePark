@@ -15,7 +15,7 @@ void ASkateParkGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 void ASkateParkGameState::UpdateTopScore(class ASkatePlayerState* SkatePlayerState)
 {
 	//if there is not top scorer yet
-	if (TopScoringPlayers.Num() == 0)
+	if (TopScoringPlayers.IsEmpty())
 	{
 		TopScoringPlayers.Add(SkatePlayerState);
 		TopScore = SkatePlayerState->GetScore();
@@ -32,12 +32,12 @@ void ASkateParkGameState::UpdateTopScore(class ASkatePlayerState* SkatePlayerSta
 	}
 
 	//Pirint top scorer
-	/*if (TopScoringPlayers.Num() > 0)
+	if (TopScoringPlayers.Num() > 0)
 	{
 		for (int32 i = 0; i < TopScoringPlayers.Num(); i++)
 		{
 			UE_LOG(LogTemp, Log, TEXT("Name: %s"), *TopScoringPlayers[i]->GetPlayerName());
 			UE_LOG(LogTemp, Log, TEXT("Score: %f"), TopScoringPlayers[i]->GetScore());
 		}
-	}*/
+	}
 }

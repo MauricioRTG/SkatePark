@@ -106,7 +106,10 @@ void AJumpOverCheckpoints::OnBoxEndOverlap(UPrimitiveComponent* OverlappedCompon
 			ASkateCharacterController* PlayerController = Cast<ASkateCharacterController>(Character->GetController());
 			if (PlayerController)
 			{
-				GameMode->PointsAcquired(PlayerController, PointsAmount);
+				if (GameMode)
+				{
+					GameMode->PointsAcquired(PlayerController, PointsAmount);
+				}
 			}
 
 			//Hide Actor and start timer to respawn it again

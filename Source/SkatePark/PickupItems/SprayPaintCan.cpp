@@ -48,7 +48,10 @@ void ASprayPaintCan::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, A
 		ASkateCharacterController* PlayerController = Cast<ASkateCharacterController>(SkateParkCharacter->GetController());
 		if (PlayerController)
 		{
-			GameMode->PointsAcquired(PlayerController, PointsAmount);
+			if (GameMode)
+			{
+				GameMode->PointsAcquired(PlayerController, PointsAmount);
+			}
 		}
 
 		//Hide pickup item and start timer to undhide after a time

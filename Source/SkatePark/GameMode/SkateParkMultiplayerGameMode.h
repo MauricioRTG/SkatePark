@@ -16,4 +16,9 @@ class SKATEPARK_API ASkateParkMultiplayerGameMode : public AGameMode
 
 public:
 	void PointsAcquired(class ASkateCharacterController* PlayerController, int32 ScoreAmount);
+
+	UPROPERTY(VisibleAnywhere)
+	class ASkateParkGameState* SkateParkGameState;
+
+	virtual void BeginPlay() override;
 };
