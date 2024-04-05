@@ -17,6 +17,10 @@
 #include "Sound/SoundBase.h"
 #include "TimerManager.h"
 #include "Components/AudioComponent.h"
+#include "SkatePark/GameStates/SkateParkGameState.h"
+#include "SkatePark/UI/GameOverWidget.h"
+#include "SkatePark/PlayerState/SkatePlayerState.h"
+#include "Components/TextBlock.h"
 
 
 
@@ -253,8 +257,52 @@ void ASkateParkCharacter::ShowMainMenu()
 	}
 }
 
+void ASkateParkCharacter::SetTopScorer()
+{
+	ASkateParkGameState* GameState = Cast<ASkateParkGameState>(UGameplayStatics::GetGameState(this));
+	ASkatePlayerState* SkatePlayerState = GetPlayerState<ASkatePlayerState>();
+
+	//Obtain winners or winner
+	if (GameState && SkatePlayerState)
+	{
+		TArray<ASkatePlayerState*> TopPlayers = GameState->TopScoringPlayers;
+		FString TopPlayersInfo;
+
+		if (TopPlayers.Num() == 0)
+		{
+			TopPlayersInfo = FString("There is no winner");
+		}
+		else if (TopPlayers.Num() == 1 && TopPlayers[0] == SkatePlayerState)
+		{
+			TopPlayersInfo = FString("You are the winner!!");
+		}
+		else if (TopPlayers.Num() == 1)
+		{
+			TopPlayersInfo = FString::Printf(TEXT("Winner: %s"), *TopPlayers[0]->GetPlayerName());
+		}
+		else if (TopPlayers.Num() > 1)
+		{
+			TopPlayersInfo = FString("Players tied:\n");
+			for (auto TiedPlayer : TopPlayers)
+			{
+				TopPlayersInfo.Append(FString::Printf(TEXT("%s\n"), *TiedPlayer->GetPlayerName()));
+			}
+		}
+		
+		//Set top scorer in User Widget
+		GameOverInstance->TopScorerTextField->SetText(FText::FromString(TopPlayersInfo));
+	}
+}
+
 void ASkateParkCharacter::ShowGameOver()
 {
+	//Remove timer
+	if (TimerInstance)
+	{
+		TimerInstance->RemoveFromParent();
+	}
+	
+	//Create GameOverWidget
 	if (GameOverClass)
 	{
 		GameOverInstance = CreateWidget<UGameOverWidget>(GetWorld(), GameOverClass);
@@ -267,6 +315,9 @@ void ASkateParkCharacter::ShowGameOver()
 			PlayerController->SetPause(true);
 			PlayerController->SetInputMode(FInputModeUIOnly());
 			PlayerController->bShowMouseCursor = true;
+
+			//Set top scorer field
+			SetTopScorer();
 		}
 		else
 		{

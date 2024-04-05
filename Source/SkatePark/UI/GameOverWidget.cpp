@@ -21,7 +21,7 @@ void UGameOverWidget::NativeConstruct()
 	LevelName = "MainMenuLevel";
 }
 
-bool UGameOverWidget::Initialize()
+/*bool UGameOverWidget::Initialize()
 {
 	if (!Super::Initialize()) return false;
 
@@ -35,7 +35,7 @@ bool UGameOverWidget::Initialize()
 	}
 
 	return true;
-}
+}*/
 
 void UGameOverWidget::OnRestartGameButtonClicked()
 {
@@ -46,7 +46,7 @@ void UGameOverWidget::OnRestartGameButtonClicked()
 	UGameplayStatics::OpenLevel(GetWorld(), FName(LevelName));
 }
 
-FText UGameOverWidget::SetTopScorerTextField()
+/*FText UGameOverWidget::SetTopScorerTextField()
 {
 
 	UWorld* World = GetWorld();
@@ -87,4 +87,4 @@ FText UGameOverWidget::SetTopScorerTextField()
 	}
 
 	return FText::FromString("NULL");
-}
+}*/
