@@ -296,12 +296,6 @@ void ASkateParkCharacter::SetTopScorer()
 
 void ASkateParkCharacter::ShowGameOver()
 {
-	//Remove timer
-	if (TimerInstance)
-	{
-		TimerInstance->RemoveFromParent();
-	}
-	
 	//Create GameOverWidget
 	if (GameOverClass)
 	{
