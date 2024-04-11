@@ -6,6 +6,8 @@
 #include "SkateParkCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "SkatePark/GameStates/SkateParkGameState.h"
+#include "SkatePark/PlayerState/SkatePlayerState.h"
+#include "GameFramework/PlayerState.h"
 
 ASkateCharacterController::ASkateCharacterController()
 {
@@ -121,16 +123,71 @@ void ASkateCharacterController::GameOver()
 {
 	bStartTimer = false;
 
-	ASkateParkCharacter* PlayerCharacter = Cast<ASkateParkCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	if (PlayerCharacter)
-	{
-		//Remove widgets from viewport
-		PlayerCharacter->HideTimer();
-		PlayerCharacter->HidePoints();
+	/*
+	* Using MultiCast RPC from Server
+	* Pros: Centralized control on the server, ensuring consistent behavior across all clients. Efficient when a single action affects all clients.
+	* Cons: Requires managing RPC calls and ensuring proper network replication. Might introduce overhead if frequent updates are needed.
+	* When to Choose: the action of hiding widgets needs to be synchronized across all clients (i.e., all clients should see the same widgets hidden simultaneously)
+	*/
 
-		//Create EndGame widget
-		PlayerCharacter->ShowGameOver();
+	/*if (IsLocalController())
+	{
+		//Hide character overlay and show game over widget
+		ServerRequestHideCharacterOverlay();
+	}*/
+
+	/*
+	* Using Iterating Over PlayerArray of the GameState on each client
+	* Pros: Straightforward and doesn't require additional RPC calls. Each client handles widget visibility locally.
+	* Cons: May result in increased network traffic if many clients are updating frequently. Might lead to slight discrepancies if updates are not synchronized perfectly.
+	* Choosed because: widget hiding is purely local and doesn't affect other clients' gameplay (e.g., hiding UI elements specific to each player's view)
+	*/
+	
+	UWorld* World = GetWorld();
+	if (World)
+	{
+		//Hide character overlay widgets of all clients and server by iterating PlayerArray from GameState
+		//We could also use a Multicast RPC to hide the widgets
+		if (IsLocalController())
+		{
+			ASkateParkGameState* SkateParkGameState = Cast<ASkateParkGameState>(World->GetGameState());
+			if (SkateParkGameState)
+			{
+				for (APlayerState* CurrentPlayerState : SkateParkGameState->PlayerArray)
+				{
+					ASkatePlayerState* SkatePlayerState = Cast<ASkatePlayerState>(CurrentPlayerState);
+					if (SkatePlayerState)
+					{
+						ASkateParkCharacter* PlayerCharacter = Cast<ASkateParkCharacter>(SkatePlayerState->GetPawn());
+						if (PlayerCharacter)
+						{
+							//Remove widgets from viewport
+							PlayerCharacter->HideTimer();
+							PlayerCharacter->HidePoints();
+						}
+					}
+				}
+			}
+		}
+
+		//Show GameOver
+		ASkateParkCharacter* SkatePlayerCharacter = Cast<ASkateParkCharacter>(UGameplayStatics::GetPlayerCharacter(World, 0));
+		if (SkatePlayerCharacter)
+		{
+			//Create EndGame widget
+			SkatePlayerCharacter->ShowGameOver();
+		}
 	}
+}
+
+void ASkateCharacterController::ServerRequestHideCharacterOverlay_Implementation()
+{
+	MulticastRequestHideCharacterOverlay();
+}
+
+void ASkateCharacterController::MulticastRequestHideCharacterOverlay_Implementation()
+{
+	/*Code to hide widgets*/
 }
 
 void ASkateCharacterController::SetStartTimer(bool StartTimer)

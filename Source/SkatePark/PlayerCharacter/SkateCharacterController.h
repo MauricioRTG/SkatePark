@@ -55,6 +55,14 @@ protected:
 	//Sync time frecuency
 	float TimeSyncRequest = 5.f;
 
+	/*HUD*/
+
+	UFUNCTION(Server, Reliable)
+	void ServerRequestHideCharacterOverlay();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRequestHideCharacterOverlay();
+
 private:
 	FTimerHandle TimerHandle;
 
