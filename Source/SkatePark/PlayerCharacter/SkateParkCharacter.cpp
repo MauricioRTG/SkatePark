@@ -133,8 +133,8 @@ void ASkateParkCharacter::UpdatePoints(int32 PointsAmount)
 
 void ASkateParkCharacter::Tick(float DeltaTime)
 {
-	//Play skatboard sound when player is moving
-	if (GetVelocity().Size() > 0.2f)
+	//Play skatboard sound when player is moving and is not jumping
+	if (GetVelocity().Size() > 0.2f && !GetMovementComponent()->IsFalling())
 	{
 		if (Sound)
 		{

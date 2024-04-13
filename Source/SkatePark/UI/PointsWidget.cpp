@@ -44,13 +44,13 @@ FText UPointsWidget::SetPointsTextField()
 				return FText::FromString(FString::FromInt(PlayerState->GetScore()));
 			}
 			
-			return FText::FromString("NULL");
+			return FText::FromString("00");
 		}
 		else
 		{
-			return FText::FromString("NULL");
+			return FText::FromString("00");
 		}
 	}
 
-	return FText::FromString("NULL");
+	return FText::FromString("00");
 }
