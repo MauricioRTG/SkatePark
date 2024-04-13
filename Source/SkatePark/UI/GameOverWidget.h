@@ -16,13 +16,20 @@ class SKATEPARK_API UGameOverWidget : public UUserWidget
 
 protected:
 	void NativeConstruct() override;
+	//bool Initialize() override;
 
 public:
 	UPROPERTY(meta = (BindWidget))
 	class UButton* RestartGameButton;
 
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* TopScorerTextField;
+
 	UFUNCTION()
 	void OnRestartGameButtonClicked();
+
+	/*UFUNCTION()
+	FText SetTopScorerTextField();*/
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Level")
 	FString LevelName;

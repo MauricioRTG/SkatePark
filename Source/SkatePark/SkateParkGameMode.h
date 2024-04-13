@@ -13,6 +13,8 @@ class ASkateParkGameMode : public AGameModeBase
 
 public:
 	ASkateParkGameMode();
+
+	void PointsAcquired(class ASkateCharacterController* PlayerController, int32 ScoreAmount);
 };
 
 

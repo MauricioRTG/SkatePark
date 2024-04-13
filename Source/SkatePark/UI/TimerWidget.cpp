@@ -55,10 +55,10 @@ FText UTimerWidget::SetMinutesTextField()
 		else
 		{
 			//Return Null
-			return FText::FromString("Null");
+			return FText::FromString("00");
 		}
 	}
-	return FText::FromString("Null");
+	return FText::FromString("00");
 }
 
 FText UTimerWidget::SetSecondsTextField()
@@ -86,8 +86,8 @@ FText UTimerWidget::SetSecondsTextField()
 		else
 		{
 			//Return Null
-			return FText::FromString("Null");
+			return FText::FromString("00");
 		}
 	}
-	return FText::FromString("Null");
+	return FText::FromString("00");
 }

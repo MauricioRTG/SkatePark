@@ -17,6 +17,10 @@
 #include "Sound/SoundBase.h"
 #include "TimerManager.h"
 #include "Components/AudioComponent.h"
+#include "SkatePark/GameStates/SkateParkGameState.h"
+#include "SkatePark/UI/GameOverWidget.h"
+#include "SkatePark/PlayerState/SkatePlayerState.h"
+#include "Components/TextBlock.h"
 
 
 
@@ -129,8 +133,8 @@ void ASkateParkCharacter::UpdatePoints(int32 PointsAmount)
 
 void ASkateParkCharacter::Tick(float DeltaTime)
 {
-	//Play skatboard sound when player is moving
-	if (GetVelocity().Size() > 0.2f)
+	//Play skatboard sound when player is moving and is not jumping
+	if (GetVelocity().Size() > 0.2f && !GetMovementComponent()->IsFalling())
 	{
 		if (Sound)
 		{
@@ -253,8 +257,46 @@ void ASkateParkCharacter::ShowMainMenu()
 	}
 }
 
+void ASkateParkCharacter::SetTopScorer()
+{
+	ASkateParkGameState* GameState = Cast<ASkateParkGameState>(UGameplayStatics::GetGameState(this));
+	ASkatePlayerState* SkatePlayerState = GetPlayerState<ASkatePlayerState>();
+
+	//Obtain winners or winner
+	if (GameState && SkatePlayerState)
+	{
+		TArray<ASkatePlayerState*> TopPlayers = GameState->TopScoringPlayers;
+		FString TopPlayersInfo;
+
+		if (TopPlayers.Num() == 0)
+		{
+			TopPlayersInfo = FString("There is no winner");
+		}
+		else if (TopPlayers.Num() == 1 && TopPlayers[0] == SkatePlayerState)
+		{
+			TopPlayersInfo = FString("You are the winner!!");
+		}
+		else if (TopPlayers.Num() == 1)
+		{
+			TopPlayersInfo = FString::Printf(TEXT("Winner : %s"), *TopPlayers[0]->GetPlayerName());
+		}
+		else if (TopPlayers.Num() > 1)
+		{
+			TopPlayersInfo = FString("Players tied:\n");
+			for (auto TiedPlayer : TopPlayers)
+			{
+				TopPlayersInfo.Append(FString::Printf(TEXT("%s\n"), *TiedPlayer->GetPlayerName()));
+			}
+		}
+		
+		//Set top scorer in User Widget
+		GameOverInstance->TopScorerTextField->SetText(FText::FromString(TopPlayersInfo));
+	}
+}
+
 void ASkateParkCharacter::ShowGameOver()
 {
+	//Create GameOverWidget
 	if (GameOverClass)
 	{
 		GameOverInstance = CreateWidget<UGameOverWidget>(GetWorld(), GameOverClass);
@@ -264,9 +306,16 @@ void ASkateParkCharacter::ShowGameOver()
 			GameOverInstance->AddToViewport();
 
 			//Interact only with UI elements and show cursor
-			PlayerController->SetPause(true);
-			PlayerController->SetInputMode(FInputModeUIOnly());
-			PlayerController->bShowMouseCursor = true;
+			APlayerController* SkatePlayerController = Cast<APlayerController>(GetController());
+			if (SkatePlayerController)
+			{
+				SkatePlayerController->SetPause(true);
+				SkatePlayerController->SetInputMode(FInputModeUIOnly());
+				SkatePlayerController->bShowMouseCursor = true;
+			}
+
+			//Set top scorer field
+			SetTopScorer();
 		}
 		else
 		{
@@ -326,7 +375,7 @@ void ASkateParkCharacter::HideTimer()
 	{
 		//Remove widget from viewport and destruct instance
 		TimerInstance->RemoveFromParent();
-		TimerInstance->Destruct();
+		//TimerInstance->Destruct();
 	}
 }
 
@@ -337,7 +386,7 @@ void ASkateParkCharacter::HidePoints()
 	{
 		//Remove widget from viewport and destruct instance
 		PointsInstance->RemoveFromParent();
-		PointsInstance->Destruct();
+		//PointsInstance->Destruct();
 	}
 }
 

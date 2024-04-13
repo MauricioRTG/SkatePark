@@ -29,10 +29,39 @@ public:
 
 	void GameOver();
 
+	virtual float GetServerTime(); // Synced with server world clock
+	virtual void ReceivedPlayer() override; // Sync with server clock as soon as possible
+
 protected:
 	virtual void BeginPlay() override;
 
 	void SetTimer();
+
+	/* Sync Time between client and server*/
+	// Requests the current server time, passing in the client's time when the request was sent
+	UFUNCTION(Server, Reliable)
+	void ServerRequestServerTime(float TimeOfClientRequestTime);
+
+	// Reports the current server time to the client in response to ServerRequestServerTime
+	UFUNCTION(Client, Reliable)
+	void ClientRequestClientTime(float TimeOfClientRequest, float TimeServerReceivedClientRequest);
+
+	//Difference between current server time and current client time
+	float ClientServerDelta = 0.f;
+
+	float TimeSyncRunningTime = 0.f;
+	void CheckTimeSync(float DeltaTime);
+
+	//Sync time frecuency
+	float TimeSyncRequest = 5.f;
+
+	/*HUD*/
+
+	UFUNCTION(Server, Reliable)
+	void ServerRequestHideCharacterOverlay();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRequestHideCharacterOverlay();
 
 private:
 	FTimerHandle TimerHandle;

@@ -31,6 +31,9 @@ protected:
 	) override;
 
 private:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowprivateAccess = "true"));
+	class ASkateParkMultiplayerGameMode* GameMode;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowprivateAccess = "true"));
 	int32 PointsAmount;
 

@@ -9,6 +9,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundBase.h"
 #include "SkatePark/PlayerCharacter/SkateParkCharacter.h"
+#include "SkatePark/PlayerState/SkatePlayerState.h"
+#include "SkatePark/PlayerCharacter/SkateCharacterController.h"
+#include "SkatePark/GameMode/SkateParkMultiplayerGameMode.h"
 
 // Sets default values
 AJumpOverCheckpoints::AJumpOverCheckpoints()
@@ -53,8 +56,18 @@ void AJumpOverCheckpoints::BeginPlay()
 {
 	Super::BeginPlay();
 
-	/*Collision Handling*/
+	//Get GameMode
+	UWorld* World = GetWorld();
+	if (World)
+	{
+		GameMode = Cast<ASkateParkMultiplayerGameMode>(World->GetAuthGameMode());
+		if (!GameMode)
+		{
+			UE_LOG(LogTemp, Log, TEXT("GameMode not found in JumpOverCheckpoints class"));
+		}
+	}
 
+	/*Collision Handling*/
 	//Allow trigger overlap envents
 	CollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	//Only overlap with player
@@ -90,7 +103,14 @@ void AJumpOverCheckpoints::OnBoxEndOverlap(UPrimitiveComponent* OverlappedCompon
 			}
 
 			//If player traverse the box in the correct direction update points
-			Character->UpdatePoints(PointsAmount);
+			ASkateCharacterController* PlayerController = Cast<ASkateCharacterController>(Character->GetController());
+			if (PlayerController)
+			{
+				if (GameMode)
+				{
+					GameMode->PointsAcquired(PlayerController, PointsAmount);
+				}
+			}
 
 			//Hide Actor and start timer to respawn it again
 			StartTimer();

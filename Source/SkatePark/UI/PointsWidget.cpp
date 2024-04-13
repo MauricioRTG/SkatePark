@@ -6,6 +6,7 @@
 #include "SkatePark/PlayerCharacter/SkateParkCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "SkatePark/SkateParkGameMode.h"
+#include "SkatePark/PlayerState/SkatePlayerState.h"
 
 bool UPointsWidget::Initialize()
 {
@@ -36,14 +37,20 @@ FText UPointsWidget::SetPointsTextField()
 		ASkateParkCharacter* SkateParkCharacter = Cast<ASkateParkCharacter>(UGameplayStatics::GetPlayerCharacter(World, 0));
 		if (SkateParkCharacter)
 		{
-			//Return player score from player character
-			return FText::FromString(FString::FromInt(SkateParkCharacter->GetPlayerPoints()));
+			//Return player score from player PlayerState
+			ASkatePlayerState* PlayerState = SkateParkCharacter->GetPlayerState<ASkatePlayerState>();
+			if (PlayerState)
+			{
+				return FText::FromString(FString::FromInt(PlayerState->GetScore()));
+			}
+			
+			return FText::FromString("00");
 		}
 		else
 		{
-			return FText::FromString("NULL");
+			return FText::FromString("00");
 		}
 	}
 
-	return FText::FromString("NULL");
+	return FText::FromString("00");
 }

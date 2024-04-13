@@ -72,8 +72,10 @@ public:
 	//Create Game Over widget instance on screen
 	void ShowGameOver();
 
-	void DelayPlayingSound();
+	//Set top scorer
+	void SetTopScorer();
 
+	void DelayPlayingSound();
 protected:
 
 	/** Called for movement input */
